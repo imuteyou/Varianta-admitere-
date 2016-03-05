@@ -1,0 +1,164 @@
+#include <iostream>
+
+using namespace std;
+
+void citire(int **A, int n);
+void afisare_matrice(int **A, int n);
+void afisare_vector(int *V, int n);
+bool prim(int aux);
+bool superprim(int aux);
+void construire_dreapta(int *V, int **A, int n);
+void construire_stanga(int *V, int **A, int n);
+void inserare(int *V, int aux);
+
+int lungime_vector = 1;
+
+int main()
+{
+    int n;
+    cout << "n = ";
+    cin >> n;
+
+    int **A = new int *[n];
+    int *V = new int [100];
+
+    for(int i = 1; i <= n; i++)
+    {
+        A[i] = new int [n];
+    }
+
+    citire(A, n);
+    afisare_matrice(A, n);
+
+    construire_stanga(V, A, n);
+    afisare_vector(V, lungime_vector);
+
+    lungime_vector = 1;
+    cout << endl;
+
+    construire_dreapta(V, A, n);
+    afisare_vector(V, lungime_vector - 1);
+}
+
+void citire(int **A, int n)
+{
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = 1; j <= n; j++)
+        {
+            cout << "A[" << i << "][" << j << "] = ";
+            cin >> A[i][j];
+        }
+    }
+}
+
+void afisare_matrice(int **A, int n)
+{
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = 1; j <= n; j++)
+        {
+            cout << A[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void afisare_vector(int *V, int n)
+{
+    for(int i = 2; i <= n; i++)
+    {
+        cout << V[i] << " ";
+    }
+    cout << endl;
+}
+
+bool prim(int aux)
+{
+    bool bReturn = true;
+
+    for(int i = 2; i <= aux / 2; i++)
+    {
+        if(aux % i == 0)
+        {
+            bReturn = false;
+            break;
+        }
+    }
+
+    return bReturn;
+}
+
+bool superprim(int aux)
+{
+    bool bReturn = true;
+
+    while(aux != 0)
+    {
+        aux = aux / 10;
+        if(!prim(aux))
+        {
+            bReturn = false;
+            break;
+        }
+    }
+
+    return bReturn;
+}
+
+void construire_stanga(int *V, int **A, int n)
+{
+    for(int i = 2; i <= n; i++)
+    {
+        for(int j = 1; j <= i - 1; j++)
+        {
+            if(prim(A[i][j]) && A[i][j] != 1)
+            {
+                if(superprim(A[i][j]))
+                {
+                    lungime_vector++;
+                    inserare(V, A[i][j]);
+                }
+            }
+        }
+    }
+}
+
+void construire_dreapta(int *V, int **A, int n)
+{
+    for(int i = 1; i <= n - 1; i++)
+    {
+        for(int j = i + 1; j <= n; j++)
+        {
+            if(prim(A[i][j]) && A[i][j] != 1)
+            {
+                if(superprim(A[i][j]))
+                {
+                    lungime_vector++;
+                    inserare(V, A[i][j]);
+                }
+            }
+        }
+    }
+}
+
+void inserare(int *V, int aux)
+{
+    int pozitie = 1;
+
+    for(int i = 1; i <= lungime_vector; i++)
+    {
+        if(aux > V[i])
+        {
+            pozitie = i;
+            break;
+        }
+    }
+
+    for(int i = lungime_vector; i >= pozitie; i --)
+    {
+        V[i + 1] = V[i];
+    }
+
+    V[pozitie] = aux;
+}
